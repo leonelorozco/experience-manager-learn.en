@@ -29,7 +29,7 @@ The validation step simply ensures that basic Cloud Manager configurations are v
 + __Cause:__ The pipeline's target environment is in a transitional state at which time it cannot accept new builds. 
 + __Resolution:__ Wait for the state to resolve to a running (or update available) state. If the environment is being deleted, re-create the environment, or choose a different environment to build to.
 
-### The environment associate with the pipeline cannot be found
+### The environment associated with the pipeline cannot be found
 
 + __Error message:__ The environment is marked as deleted.
 ![The environment is marked as deleted](./assets/build-and-deployment/validation__environment-marked-as-deleted.png)
@@ -68,7 +68,7 @@ Code scanning results in a build failure if a Critical Security vulnerabilities 
 
 To resolve code scanning issues, download the CSV-fomatted report provided by Cloud Manager via the **Download Details** button and review any entries.
 
-For more details see AEM specific rules, see Cloud Manager documentations' [custom AEM-specific code scanning rules](https://experienceleague.adobe.com/docs/experience-manager-cloud-manager/using/how-to-use/custom-code-quality-rules.html).
+For more details see AEM specific rules, see Cloud Manager documentation's [custom AEM-specific code scanning rules](https://experienceleague.adobe.com/docs/experience-manager-cloud-manager/using/how-to-use/custom-code-quality-rules.html).
 
 ## Build Images
 
@@ -90,8 +90,8 @@ set the 'mergeConfigurations' flag to 'true' if you want to merge multiple confi
 
 #### Cause 1
 
-+ __Cause:__ The AEM project's all package, contains multiple code packages, and the same OSGi configuration is provided by more than one of the code packages, resulting in a conflict, resulting the Build Image step unable to decide which should be used, thus failing the build. Note this does not apply to OSGi factory configurations, as long as they have unique names.
-+ __Resolution:__ Review all code packages (including any included 3rd party code packages) being deployed as part of the AEM application, looking for duplicate OSGi configurations that resolve, via runmode, to the target environment. The error message's guidance of "set the mergeConfigurations flag to true" is not possible in AEM as a Cloud service, and should be ignored.
++ __Cause:__ The AEM project's all package, contains multiple code packages, and the same OSGi configuration is provided by more than one of the code packages, resulting in a conflict, resulting the Build Image step unable to decide which should be used, thus breaking the build. Note this does not apply to OSGi factory configurations, as long as they have unique names.
++ __Resolution:__ Review all code packages (including any included 3rd-party code packages) being deployed as part of the AEM application, looking for duplicate OSGi configurations that resolve, via runmode, to the target environment. The error message's guidance of "set the mergeConfigurations flag to true" is not possible in AEM as a Cloud service, and should be ignored.
 
 #### Cause 2
 
@@ -100,7 +100,7 @@ set the 'mergeConfigurations' flag to 'true' if you want to merge multiple confi
 
 ### Malformed repoinit script
 
-Repoinit scripts define baseline content, users, ACLs, etc. In AEM as a Cloud Service, repoinit scripts are applied during Build Image, however on AEM SDK's local quickstart they are applied when the OSGi repoinit factory configuration is activated. Because of this, Repoinit scripts may quietly fail (with logging) on AEM SDK's local quickstart, and but cause the Build Image step to fail, halting deployment.
+Repoinit scripts define baseline content, users, ACLs, etc. In AEM as a Cloud Service, repoinit scripts are applied during Build Image; however, on AEM SDK's local quickstart, they are applied when the OSGi repoinit factory configuration is activated. Because of this, Repoinit scripts may quietly fail (with logging) on AEM SDK's local quickstart and cause the Build Image step to fail, thus halting deployment.
 
 + __Cause:__ A repoinit script is malformed. This may leave your repository in an incomplete state as any repoinit scripts after the failing script are not executed against the repository.
 + __Resolution:__ Review the AEM SDK's local quickstart when the repoinit script OSGi configuration is deployed to determine if and what the errors are.
@@ -110,7 +110,7 @@ Repoinit scripts define baseline content, users, ACLs, etc. In AEM as a Cloud Se
 Repoinit scripts define baseline content, users, ACLs, etc. In AEM SDK's local quickstart, repoinit scripts are applied when the repoinit OSGi factory configuration is activated, or in other words, after the repository is active and may have incurred content changes directly or via content packages. In AEM as a Cloud Service, repoinit scripts are applied during Build Image against a repository that may not contain content the repoinit script depends on.
 
 + __Cause:__ A repoinit script depends on content that is not existent.
-+ __Resolution:__ Ensure the content the repoinit script depends on exists. Often, this indicates an inadequately defined repoinit scripts that is missing directives that define these missing, but required, content structures. This can reproduced locally by deleting AEM, unpacking the Jar and adding the repoinit OSGi configuration containing the repoinit script to the install folder, and starting AEM. The error will present itself in the AEM SDK local quickstart's error.log.
++ __Resolution:__ Ensure the content the repoinit script depends on exists. Often, this indicates an inadequately defined repoinit scripts that is missing directives that define these missing, but required, content structures. This can be reproduced locally by deleting AEM, unpacking the Jar and adding the repoinit OSGi configuration containing the repoinit script to the install folder, and starting AEM. The error will present itself in the AEM SDK local quickstart's error.log.
 
 
 ### Application's Core Components version is greater than deployed version
@@ -141,7 +141,7 @@ To prevent this failure, whenever an Update of the AEM as a Cloud Service enviro
 + __Cause:__  The application's OSGi bundle (defined in the `core` project) imports Java classes from Core Components core dependency, at a different version level than is what's deployed to AEM as a Cloud Service. 
 + __Resolution:__ 
   + Using Git, revert to a working commit that exists prior to Core Component version increment. Push this commit to a Cloud Manager Git branch and perform an Update of the environment from this branch. This will upgrade AEM as a Cloud Service to the latest AEM Release, which will include the later Core Components version. Once the AEM as a Cloud Service is updated to the latest AEM Release, which will have the latest Core Components version, redeploy the originally failing code.
-  + To reproduce this issue locally, ensure the AEM SDK version is the same AEM release version the AEM as a Cloud Service environment is using.
+  + To reproduce this issue locally, ensure the AEM SDK version is the same AEM release version as the AEM as a Cloud Service environment is using.
 
 
 ### Create an Adobe Support case
@@ -156,7 +156,7 @@ If the above troubleshooting approaches do not resolve the issue, please create 
 
 The Deploy to step is responsible for taking the code artifact generated in Build Image, starts up new AEM Author and Publish services using it, and upon success, removes any old AEM Author and Publish services. Mutable content packages and indexes are installed and updated in this step as well.
 
-Familiarize yourself with [AEM as a Cloud Service logs](./logs.md) prior to debugging the Deploy to step. The `aemerror` log contains information around the start up and shutdown of pods which may be pertinent to Deploy to issues. Note that the log available via the Download Log button in the Cloud Manager's Deploy to step is not the `aemerror` log, and does not contain detailed information pertaining to your applications start up.
+Familiarize yourself with [AEM as a Cloud Service logs](./logs.md) prior to debugging the Deploy to step. The `aemerror` log contains information around the start up and shutdown of pods which may be pertinent to Deploy to issues. Note that the log available via the Download Log button in the Cloud Manager's Deploy to step is not the `aemerror` log, and does not contain detailed information pertaining to your application's start up.
 
 ![Deploy to](./assets/build-and-deployment/deploy-to.png)
 
@@ -180,9 +180,9 @@ Code running during the start up of the newly deployed AEM service takes so long
 
 ### Incompatible code or configuration
 
-Most code and configuration violations are caught in earlier in the build, however it is possible for custom code or configuration to be incompatible with the AEM as a Cloud Service and go undetected until it executes in the container.
+Most code and configuration violations are caught in earlier in the build; however, it is possible for custom code or configuration to be incompatible with the AEM as a Cloud Service and go undetected until it executes in the container.
 
-+ __Cause:__ Custom code may invoke lengthy operations, such as large queries or content traversals, triggered early on in OSGi bundle or Component life-cycles significantly delaying the start up time of AEM.
++ __Cause:__ Custom code may invoke lengthy operations, such as large queries or content traversals, triggered early on in OSGi bundle or Component life-cycles, significantly delaying the start up time of AEM.
 + __Resolution:__ Review the `aemerror` logs for AEM Author and Publish services around the time (log time in GMT) of the failure as shown by the Cloud Manager.
   1. Review the logs for any ERRORS thrown by the Java classes provided by the custom application. If any issues are found, resolve, push the fixed code, and re-build the pipeline.
   1. Review the logs for any ERRORS reported by aspects of AEM that you are extending/interacting with in your custom application, and investigate those; these ERRORs may not be directly attributed to Java classes. If any issues are found, resolve, push the fixed code, and re-build the pipeline.
@@ -193,7 +193,7 @@ Most code and configuration violations are caught in earlier in the build, howev
 
 This issue difficult to identify as it does not result in a failure on the initial deployment, only on subsequent deployments. Noticeable symptoms include:
 
-+ The initial deployment succeeds, however new or changed mutable content, that is part of the deployment, does not appear to exists on AEM Publish service. 
++ The initial deployment succeeds, however new or changed mutable content, that is part of the deployment, does not appear to exist on AEM Publish service. 
 + Activation/De-activation of content in AEM Author is blocked 
 + Subsequent deployments fail in the Deploy to step, with the Deploy to step failing after approximately 60 minutes.
 
@@ -225,7 +225,7 @@ To validate this issue is the cause of the failing behavior:
  
 + __Cause:__ AEM's replication service user used to deploy content packages to the AEM Publish service cannot write to `/var` on AEM Publish. This results in the deployment of the content package to the AEM Publish service to fail.
 + __Resolution:__ The following ways to resolve this issues are listed in the order of preference:
-  1. If the `/var` resources are not necessary remove any resources under `/var` from content packages that are deployed as part of your application.
+  1. If the `/var` resources are not necessary, remove any resources under `/var` from content packages that are deployed as part of your application.
   2. If the `/var` resources are necessary, define the node structures using [repoinit](https://experienceleague.adobe.com/docs/experience-manager-cloud-service/implementing/deploying/overview.html#repoinit). Repoinit scripts can be targeted to AEM Author, AEM Publish or both, via OSGi runmodes.
   3. If the `/var` resources are only required on AEM author and cannot be reasonably modeled using [repoinit](https://experienceleague.adobe.com/docs/experience-manager-cloud-service/implementing/deploying/overview.html#repoinit), move them to a discrete content package, that is only installed on AEM Author by [embedding](https://experienceleague.adobe.com/docs/experience-manager-cloud-service/implementing/developing/aem-project-content-package-structure.html#embeddeds) it in the `all` package in an AEM Author runmode folder (`<target>/apps/example-packages/content/install.author</target>`).  
   4. Provide appropriate ACLs to the `sling-distribution-importer` service user as described in this [Adobe KB](https://helpx.adobe.com/in/experience-manager/kb/cm/cloudmanager-deploy-fails-due-to-sling-distribution-aem.html).
